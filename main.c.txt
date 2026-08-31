@@ -4,6 +4,8 @@
 #include <readline/history.h>
 #include <readline/readline.h>
 #include "history.h"
+#include "token.h"
+#include "lexer.h"
 
 
 int main(void)
@@ -15,6 +17,7 @@ int main(void)
     printf("=====================================\n");
 
 // Initializing History 
+ token_list_t tokens;
  using_history(); 
 
  char *line;
@@ -22,11 +25,18 @@ int main(void)
     while (1)
     {
         line = readline("shellforge$ ");
-        if (line == NULL)
+        if (strcmp(line, "exit") == 0)
+        {
+            free(line);
+	    printf("Exiting...\n");
+            break;
+        }
+       if (line == NULL)
         {
             printf("\nGoodbye!\n");
             break;
         }
+
 
         if (strlen(line) == 0)
         {
@@ -42,14 +52,9 @@ int main(void)
        }
     // adding the input line to history 
         add_history(line);
-       printf(" YOU ENTERED : %s\n", line); 
-	
-        if (strcmp(line, "exit") == 0)
-        {
-            free(line);
-            printf("Exiting...\n");
-            break;
-        }
+        lexer(line, &tokens);
+        token_print(&tokens);
+      
 	free(line);
     }    
     return 0;
